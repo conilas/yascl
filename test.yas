@@ -1,0 +1,23 @@
+contract Xa
+
+constructed Address owner
+mutable String message
+constructed String name
+
+invariants
+  message != shit
+  other > 1
+end
+
+init(owner: Address, initial: String) : String
+  mutates: message, name
+  requires: initial.length > 1123
+{
+  self.owner = owner
+  self.message = initial
+}
+
+init(owner: Address) : String
+{
+  self.owner = owner
+}

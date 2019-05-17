@@ -1,0 +1,72 @@
+//we should have a --enforced option on the compiler, which would make sure more things are right before running
+//maybe running all the checks @ compile time
+//we could layer that in order to choose how much enforcement would happen
+contract X
+
+immutable Int total
+immutable Address owner
+
+field String message
+field String name
+
+//an invariant is something that could, for instance, be put in
+//every function's ensure clauses. instead, we define it here.
+invariant:
+  message != name
+  message.length == 10
+  name.length == 10
+
+create(total : Int, owner : Address)
+updates :
+  total and owner
+does :
+  self.total = total
+  self.owner = owner
+
+export update(value: String) : Integer
+updates:
+  self.message
+  self.owner //compiler error - cannot update an immutable variable
+requires:
+  value.length > 10
+does:
+  self.message = value
+  return 10
+ensures:
+  ret > 0
+  old self.message.length == self.message.length //ensuring we did not change the message's length
+
+
+export changeNameError(value: String)
+does :
+  updateSelfName(value) //compiler error - cannot call an updatable method without explicitly telling it does
+
+
+export changeMessage(value: String)
+updates :
+  self.message //chained
+does:
+  //we'd have to remove boolean operations at the first moment
+  passable = assert(value.length > 10) //will throw error if value.length is not bigger than 10; else, returns an asserted value - value where length > 10
+  //typeof passable: String where length > 10
+  //this means we'd have Refined types for our language
+  updateSelfName(value) //compiler error if passed -enforce: cannot call update self message because value does not know self length
+
+updateSelfMessage(value: String)
+updates:
+  self.message
+requires:
+  value.length > 10
+does:
+  self.message = value
+
+updateSelfName(value: String)
+updates:
+  self.name
+does:
+  self.name = value
+
+//readings:
+//http://se.inf.ethz.ch/~meyer/publications/computer/contract.pdf
+//http://www.cs.tau.ac.il/~nachumd/term/FloydMeaning.pdf
+//http://www.cs.toronto.edu/~chechik/courses05/csc410/readings/hoare_axiomatic.pdf
