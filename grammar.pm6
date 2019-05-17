@@ -58,12 +58,25 @@ grammar Lang is export  {
       <lbrace> <.eol> <fn-body> <.eol> <rbrace>
     }
 
-    rule contract-fn-declaration {
-      | <word> <lparen> <fn-args>* <rparen> <type-decl>* <.eol>
+    rule contract-fn-block {
+      <lparen> <fn-args>* <rparen> <type-decl>* <.eol>
       <mutates-construct>*
       <requires-contruct>*
       <ensures-construct>*
       <fn-block>
+    }
+
+    rule constructor-contract-delcaration {
+        | "init" <contract-fn-block>
+    }
+
+    rule common-constructor-function-declaration {
+      | <word> <contract-fn-block>
+    }
+
+    rule contract-fn-declaration {
+      | <constructor-contract-delcaration>
+      | <common-constructor-function-declaration>
     }
 
     rule fn-call {
