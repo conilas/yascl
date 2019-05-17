@@ -1,17 +1,15 @@
 contract Xa
 
 constructed Address owner
-mutable String message
 constructed String name
+mutable String message
 
-invariants
-  message != shit
-  other > 1
-end
+invariants: message != shit, other > 1
 
 init(owner: Address, initial: String) : String
-  mutates: message, owner
-  requires: initial.length > 1123
+  mutates: owner, message          //compiletime check
+  requires: initial.length > 1123 //runtime check
+  ensures: message.length > 10   //runtime check
 {
   self.message = initial
   self.owner = owner

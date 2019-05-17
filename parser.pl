@@ -4,8 +4,15 @@ use grammar;
 my @constructed_fields;
 my @mutable_fields;
 my @functions;
+my @invariants;
 
 class TestActions {
+    method invariant($/) {
+      for $/.<bool-expression-list><expression> -> $match {
+        @invariants.push($match)
+      }
+    }
+
     method constructed-field-declaration($/) {
         @constructed_fields.push($/.<word>);
     }
@@ -89,3 +96,13 @@ my $test = $fh.slurp;
 $fh.close;
 
 my $parse_tree = Lang.parse($test, actions => TestActions.new);
+
+# for $parse_tree<statement> -> $match {
+#   when $match<invariant> {
+#       for $match<invariant><bool-expression-list><expression> -> $expression {
+#           say "[DEBUG] Found invariant. Should be put in all 'ensures'. " ~ $expression;
+#       }
+#   }
+# }
+
+say @invariants;

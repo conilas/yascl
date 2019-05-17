@@ -14,14 +14,6 @@ grammar Lang is export  {
       <word>
     }
 
-    rule invariant {
-      | "invariants" <.eol> <invariant-expressions> "end"
-    }
-
-    rule invariant-expressions {
-      <expression>* %%  <.eol>
-    }
-
     rule statement {
       | <contract-definition>
       | <invariant>
@@ -38,8 +30,13 @@ grammar Lang is export  {
       | <word>* %% <arg-separator>
     }
 
+
     rule mutates-construct {
       | "mutates" ":" <word-list> <eol>
+    }
+
+    rule invariant {
+      | "invariants" ":" <bool-expression-list> 
     }
 
     rule bool-expression-list {
