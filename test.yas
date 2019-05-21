@@ -10,11 +10,14 @@ init(owner: Address, initial: String) : String
   mutates: owner, message          //compiletime check
   requires: initial.length > 1123 //runtime check
   ensures: message.length > 10   //runtime check
-{
-  self.message = initial
-  self.owner = owner
-}
+  does: {
+    self.message = initial
+    self.owner = owner
+    if x > 1  {
 
+    }
+  }
+      
 other(message: String) : String
   mutates: message
 {
