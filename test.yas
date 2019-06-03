@@ -21,3 +21,9 @@ other(message: String) : String
   self.message = message
   self.message = 'hey'
 }
+
+other(message: String) : String
+{
+  self.message = message //should throw compiler error - non-informed mutability
+}
+
