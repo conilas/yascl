@@ -1,108 +1,33 @@
 use lib '.';
 use grammar;
-
-my @constructed_fields;
-my @mutable_fields;
-my @functions;
-my @invariants;
-
-class TestActions {
-    method invariant($/) {
-      for $/.<bool-expression-list><expression> -> $match {
-        @invariants.push($match)
-      }
-    }
-
-    method constructed-field-declaration($/) {
-        @constructed_fields.push($/.<word>);
-    }
-
-    method mutable-field-declaration($/) {
-        @mutable_fields.push($/.<word>);
-    }
-
-    method constructor-contract-delcaration($/) {
-      my @mutations;
-      my @mutated;
-      my @constructions;
-      my @constructed;
-      my @executed_mutations;
-
-      for $/.<contract-fn-block><mutates-construct> -> $mutates {
-          for $mutates.<word-list>.<word> -> $word {
-            if $word eq any(@mutable_fields) {
-                @mutations.push($word)
-            } elsif $word eq any(@constructed_fields) {
-                @constructions.push($word)
-            } else {
-              die $word ~ " not in mutable fields. Did you forget to create the field?"
-            }
-          }
-      }
-
-      for $/.<contract-fn-block><fn-block><fn-body><expression> -> $expression {
-        when $expression<value-assignment><self-assignment> {
-          if !($expression<value-assignment><self-assignment><word> eq any(@mutations)) and
-             !($expression<value-assignment><self-assignment><word> eq any(@constructions)) {
-            die $expression<value-assignment><self-assignment><word> ~
-                " mutated but not annotated in mutations. Did you forget to add a 'mutations' clause?";
-          } else {
-            if ($expression<value-assignment><self-assignment><word> eq any(@constructions)) {
-              @constructed.push($expression<value-assignment><self-assignment><word>)
-            } else {
-              @mutated.push($expression<value-assignment><self-assignment><word>)
-            }
-          }
-        }
-      }
-
-      my @should_have_constructed =  @constructions.grep({ ! ($_  eq any(@constructed))});
-
-      if @should_have_constructed.any() {
-        die "The following values were not mutated, but where in the mutation contract. Have you forgotten to mutate them? [" ~
-            @should_have_constructed ~ "] ";
-      }
-    }
-
-    method common-constructor-function-declaration($/) {
-      my @mutations;
-      my @executed_mutations;
-
-      for $/.<contract-fn-block><mutates-construct> -> $mutates {
-          for $mutates.<word-list>.<word> -> $word {
-            if $word eq any(@mutable_fields) {
-                @mutations.push($word)
-            } else {
-              die $word ~ " not in mutable fields. Did you forget to create the field?"
-            }
-          }
-      }
-
-      for $/.<contract-fn-block><fn-block><fn-body><expression> -> $expression {
-        when $expression<value-assignment><self-assignment>  {
-          if !@mutations.first($expression<value-assignment><self-assignment><word>) {
-            die $expression<value-assignment><self-assignment><word> ~
-                " mutated but not annotated in mutations. Did you forget to add a 'mutations' clause?";
-          }
-        }
-      }
-
-      @functions.push($/)
-    }
-}
+use actions;
 
 my $fh = open "test.yas", :r;
 my $test = $fh.slurp;
 $fh.close;
 
-my $parse_tree = Lang.parse($test, actions => TestActions.new);
+my $actions = TestActions.new;
+my $parse_tree = Lang.parse($test, actions => $actions);
+my $code_generation_fields_template = sub ($type, $name) { return '\qq[$type.lc()] \qq[$name]; ' }
+my $code_generation_function = sub ($name) { return ' function \qq[$name] { }'}
 
-# for $parse_tree<statement> -> $match {
-#   when $match<invariant> {
-#       for $match<invariant><bool-expression-list><expression> -> $expression {
-#           say "[DEBUG] Found invariant. Should be put in all 'ensures'. " ~ $expression;
-#       }
-#   }
-# }
+my $generated_code = '';
 
-say @invariants;
+my $contract = $actions.get_contract;
+my @code_generation_annotated_fields = $actions.get_code_generation_annotated_fields;
+my @functions = $actions.get_functions;
+
+$generated_code = $generated_code ~ 'contract \qq[$contract]  {  ';
+for @code_generation_annotated_fields -> $val {
+  $generated_code = $generated_code ~ $code_generation_fields_template($val<type>, $val<name>);
+}
+for @functions -> $val {
+  for $val<contract-fn-block><fn-block><fn-body><expression> -> $expr {
+    say $expr;
+  }
+}
+$generated_code = $generated_code ~ '}';
+
+my $output = open "output_example.sol", :w;
+$output.print($generated_code);
+$output.close;

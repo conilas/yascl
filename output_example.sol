@@ -1,0 +1,1 @@
+contract Xa  {  address  owner; string  name; string  message; }

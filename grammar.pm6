@@ -30,13 +30,12 @@ grammar Lang is export  {
       | <word>* %% <arg-separator>
     }
 
-
     rule mutates-construct {
       | "mutates" ":" <word-list> <eol>
     }
 
     rule invariant {
-      | "invariants" ":" <bool-expression-list> 
+      | "invariants" ":" <bool-expression-list>
     }
 
     rule bool-expression-list {
@@ -234,7 +233,7 @@ grammar Lang is export  {
       | <int-type>
       | <fn-type>
       | <refined-string-type>
-      | <string-type>
+      | 'String'
       | <universe-type>
       | <module-type>
       | <sum-type-wrap>
