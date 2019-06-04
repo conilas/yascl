@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{CooLang White Paper}
+\author{meinen.nicolas }
+\date{June 2019}
+
+\begin{document}
+
+\maketitle
+
+\section{Abstract}
+
+This paper will try and explain Coolang, a new programming language that uses an extremely suitable programming model for writing Smart Contracts on the blockchain: design by contracts. Design by contracts is an idea from around 1985 created by Bertrand Meyer in the Eiffel programming language. The idea is to make code easier to reason about and avoid making some usual mistakes, like forgetting to validate inputs, mutating what you didn't want to mutate and so on. We describe some of the syntax and semantics of the language, explain design by contracts and why is it a good foundation for writing the sovereign code of smart contracts. 
+
+\section{Introduction}
+
+If we look into the computer science history, the blockchain world can be considered recent. There are many things being built on it, with Cryptocurrencies being the most widespread one. One of the issues - like many subareas in this field - is that it sometimes favors \textit{implementation} instead of theoretical basis. This leads to breaking some common principles, such as the DRTW one, which states that you should not reinvent something when it has already been done. For instance, it is only natural to say that the design by contracts principle should be a good fit for programming contracts on the blockchain - but it being overseen could be expected because the concern was in the creation of application to fit on the blockchain, not in studying some theoretical ideas.
+
+Smart Contracts can be seen as an application that runs on the blockchain in order to enforce some agreement between two parties \cite{smartcontractsaprimer}. Right around 2014, the first programming language specifically designed for building Smart Contracts was proposed: Solidity, a programming language based on the plain-old imperative and structured model of computing. 
+
+Those applications have also a key difference when compared to what people are used to. Whenever a contract is deployed in the blockchain, it cannot be redeployed and it cannot be taken down, unless in some really rare special occasions and conditions \cite{attacks}. Even then, the techniques known to work, such as \textit{hard forking}, are pretty much creating a whole new blockchain copying what's left before that contract.
+
+This paper will elucidate the idea behind Coolang - a DSL for creating Smart Contracts that helps the developer in building reliable applications. Just like Solidity, Coolang is a language specifically designed for building Smart Contracts, which means that a part of its structure should look alike. The key difference is that Coolang has its basis on the design by contracts technique, which, as stated before, brings reliability to the software being developed. 
+
+The structure will be the following. Section 3 will focus on explaining smart contracts and their applications. Section 4 will explain the design by contracts idea and give some mathematical foundation for it with Hoare Logic. We move then to Section 5, which will bring some of the possible issues that can be solved by Coolang. Some familiarity with programming will be helpfull to the reader. 
+
+\section{Smart Contracts and their applications}
+
+\section{Enforcing correctness with Design by Contracts}
+
+\section{Some possible uses in practice}
+
+
+\begin{thebibliography}{9}
+\bibitem{smartcontractsaprimer} 
+N. O. Sadiku, Matthew \& Eze, Kelechi \& M. Musa, Sarhan. (2018). Smart Contracts: A Primer. 
+\bibitem{dbc} 
+Meyer, Bertrand. "Applying'design by contract'." Computer 25.10 (1992): 40-51.
+\bibitem{attacks}
+Atzei N., Bartoletti M., Cimoli T. (2017) A Survey of Attacks on Ethereum Smart Contracts (SoK). In: Maffei M., Ryan M. (eds) Principles of Security and Trust. POST 2017. Lecture Notes in Computer Science, vol 10204. Springer, Berlin, Heidelberg
+\end{thebibliography}
+\end{document}
+
